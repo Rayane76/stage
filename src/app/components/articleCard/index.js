@@ -10,23 +10,23 @@ export default function ArticleCard() {
             <div className="codePriceDiv">
                <div className="codeDiv">
                   <div className="row1">
-                   <p>Code</p>
-                   <input></input>
-                   <p>Qte</p>
-                   <input></input>
+                   <p style={{marginRight:"45px"}}>Code</p>
+                   <input className="codeInput"></input>
+                   <p style={{marginRight:"5px"}}>Qte :</p>
+                   <input className="qteInput"></input>
                   </div>
                   <div className="row2">
-                   <p>Famille :</p>
-                   <Form.Select>   
+                   <p style={{marginRight:"25px"}}>Famille:</p>
+                   <Form.Select className="familleForm">   
                 <option value="s">Particulier</option>
                 <option value="m">M</option>
                 <option value="l">L</option>
                 <option value="xl">XL</option>
                 <option value="xxl">XXL</option>
                </Form.Select>
-               <p>ID</p>
-                 <input></input>
-                 <Form.Select>   
+               <p style={{marginRight:"26px"}}>ID</p>
+                 <input className="idInput"></input>
+                 <Form.Select className="familleForm">   
                 <option value="s">Particulier</option>
                 <option value="m">M</option>
                 <option value="l">L</option>
@@ -35,11 +35,20 @@ export default function ArticleCard() {
                </Form.Select>
                   </div>
                   <div className="row3">
-
+                  <p style={{marginRight:"28px"}}>Article :</p>
+                  <Form.Select className="familleForm">   
+                <option value="s">Particulier</option>
+                <option value="m">M</option>
+                <option value="l">L</option>
+                <option value="xl">XL</option>
+                <option value="xxl">XXL</option>
+               </Form.Select>
+               <p style={{marginRight:"5px"}}>Prix :</p>
+               <input className="priceInput"></input>
                   </div>
                </div>
                <div className="priceDiv">
-
+                 <h1>0,00</h1>
                </div>
             </div>
         </>
