@@ -1,0 +1,58 @@
+.navDiv{
+    height: fit-content;
+    display: flex;
+    align-items: center;
+}
+
+.formClient{
+    width: 200px;
+}
+
+.navDivDropDown{
+   display: flex;
+   align-items: center;
+}
+
+.navDivFirstBox{
+    padding: 10px;
+    background-color: #B5C0D0;
+    height: fit-content;
+    width: fit-content;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.navDivButtons{
+    display: flex;
+    height: fit-content;
+    width: fit-content;
+    margin-top: 10px;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background-color: #B5C0D0;
+    border-width: 2px;
+    border-color: black;
+    border-style: solid;
+    margin-right: 20px;
+}
+
+.divBtn{
+    margin-right: 5px;
+    height: 50px;
+    width: 50px;
+    background-image: linear-gradient(to bottom, #EEF5FF, #EEF5FF 50%, #BFCFE7 50%, #BFCFE7);
+}
+
+.dateDiv{
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    height: fit-content;
+    width: fit-content;
+    background-color: #22DD22;
+}
