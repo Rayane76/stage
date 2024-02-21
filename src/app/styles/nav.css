@@ -56,3 +56,9 @@
     width: fit-content;
     background-color: #22DD22;
 }
+
+@media only screen and (max-width: 800px) {
+    .navDivButtons{
+        display: none;
+    }
+} 

@@ -1,0 +1,32 @@
+.tableTotalDiv{
+    margin-top: 20px;
+    display: flex;
+}
+
+.tableDiv{
+    width: 50%;
+}
+
+.totalDiv{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.qteDiv{
+    width: 50%;
+}
+
+.fsRow{
+margin-bottom: 10px;
+}
+
+.scndRow{
+
+}
+
+.fsBtn{
+    padding: 10px;
+    margin-right: 5px;
+}
