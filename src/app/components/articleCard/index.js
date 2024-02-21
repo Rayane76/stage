@@ -9,7 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
+import { FaPlus, FaMinus, FaCheck,FaPen} from 'react-icons/fa';
 
 export default function ArticleCard() {
 
@@ -46,23 +46,23 @@ export default function ArticleCard() {
                 </Table>
               </TableContainer>
               </div>
+
               <div className="qteDiv">
                <div className="totalDiv">
-                <h1>Total Qte :</h1>
-                <h1>0</h1>
-                <h1>Nombre Articles :</h1>
-                <h1>0</h1>
+                <h2>Total Qte :</h2>
+                <h2 style={{color:'red'}}>0</h2>
+                <h2>Nombre Articles :</h2>
+                <h2 style={{color:'red'}}>0</h2>
                </div> 
                <div className="qteDivBtnsDiv">
                  <div className="fsRow">
-                   <button className="fsBtn">Enregister</button>
+                   <button className="fsBtn">Enregister<FaCheck style={{color:'green'}} /></button>
                    <button className="fsBtn">Inserer</button>
-                   <button className="fsBtn">Modifier</button>
+                   <button className="fsBtn">Modifier<FaPen style={{color:'blue'}} /></button>
                  </div>
                  <div className="scndRow">
-                   <button className="fsBtn">Ajouter</button>
-                   <button className="fsBtn">Effacer</button>
-                   <button className="fsBtn">Button</button>
+                   <button className="fsBtn">Ajouter <FaPlus style={{color:'green'}} /></button>
+                   <button className="fsBtn">Effacer <FaMinus  style={{color:'red'}}/></button>
                  </div>
                </div>
               </div>

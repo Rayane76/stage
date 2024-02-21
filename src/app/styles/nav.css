@@ -1,6 +1,27 @@
 .navDiv{
-    height: fit-content;
+    height:fit-content;
     display: flex;
+    align-items: center;
+    flex-direction: column;
+   
+}
+.title{
+    background-color: red;
+    color: white;
+    width: 100%;
+    display: flex ;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border: 2px solid black;
+}
+.title h1{
+    margin-left: 35rem;
+}
+.DivBoxes{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
 }
 

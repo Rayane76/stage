@@ -46,16 +46,23 @@
     height: 50px;
     width: 60%;
     margin-right: 10px;
+    text-align: center;
+    font-weight: bolder;
+    font-size: 1.2rem;
 }
 
 .qteInput{
     height: 50px;
     width: 16%;
+    font-size: 1.2rem;
+    font-weight: bolder;
 }
 
 .priceInput{
     height: 30px;
     width: 45%;
+    font-size: 1.2rem;
+    font-weight: bolder;
 }
 
 .priceDiv{
@@ -66,4 +73,5 @@
     justify-content: end;
     align-items: center;
     color: #22DD22;
+    font-size: 4rem;
 }

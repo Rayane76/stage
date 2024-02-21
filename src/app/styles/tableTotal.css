@@ -4,7 +4,7 @@
 }
 
 .tableDiv{
-    width: 50%;
+    width: 70%;
 }
 
 .totalDiv{
@@ -15,7 +15,13 @@
 }
 
 .qteDiv{
-    width: 50%;
+    width: 30rem;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(206, 206, 206);
 }
 
 .fsRow{
