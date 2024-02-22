@@ -6,7 +6,7 @@ import { createContext, useEffect, useRef,useState, } from "react";
 import axios from 'axios';
 
 //utilsier create context pour peut transporter larticel vers la page des tableaux
-export default ArtcileConetxt=createContext()
+/* export default ArtcileConetxt=createContext() */
 
 export default function CodePrice(){
    const cbRef = useRef(null);
@@ -210,9 +210,9 @@ useEffect(() => {
                           ) : ''}
                </div>  */}
 
-    <ArtcileConetxt.Provider value={input.id,clickedArticle,}>
+   {/*  <ArtcileConetxt.Provider value={input.id,clickedArticle,}>
       
-    </ArtcileConetxt.Provider>
+    </ArtcileConetxt.Provider> */}
             </div>
         </>
     )
