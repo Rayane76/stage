@@ -75,3 +75,18 @@
     color: #22DD22;
     font-size: 4rem;
 }
+.ajout-input{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+}
+.article{
+    margin-left: 1.9rem;
+}
+.prix{
+    margin-left: 3.2rem;
+}
+.chemin{
+    margin-left: 1.4rem;
+}
