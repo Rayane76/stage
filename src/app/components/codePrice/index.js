@@ -168,7 +168,15 @@ useEffect(() => {
   const [articleChosen,setArticleChosen] = useState("");
   const onArticleSelect = (e)=>{
     setArticleChosen(e.target.value);
-
+    const priceInput = document.getElementById("price");
+    const qteInput = document.getElementById("qte")
+    qteInput.value = 1;
+    qteRef.current.focus();
+    articles.map((article)=>{
+      if(article.name === e.target.value){
+        priceInput.value = article.price;
+      }
+    })
   }
 
     return(
@@ -178,46 +186,49 @@ useEffect(() => {
                   <div className="row1">
                    <p style={{marginRight:"45px"}}>Code</p>
                    <input className="codeInput" type='text' ref={cbRef} name='cb' onKeyPress={handleKeyPress} value={input.cb} defaultValue={0} onChange={HandelInput}></input>
+
+
+
                    <p style={{marginRight:"5px"}}>Qte :</p>
-                   <input className="qteInput" ref={qteRef} name='qte' onChange={HandelInput} value={input.qte}></input>
+                   <input className="qteInput" id="qte" ref={qteRef} name='qte' onChange={HandelInput} value={input.qte}></input>
+
+
+
                   </div>
+
+
+
                   <div className="row2">
                    <p style={{marginRight:"25px"}}>Famille:</p>
                    <Form.Select className="familleForm">   
 
-               {/* {famille ? famille.map((item,index)=>{
-                      <option key={index}>{item.name}</option>
-               }):<h4>Loading.....</h4>} */}
-
                </Form.Select>
+
+
+
                <p style={{marginRight:"26px"}}>ID</p>
                  <input className="idInput" name="id" /* value={id} */></input>
                  <Form.Select className="familleForm">  
 
-               {/* {id ? id.map((item,index)=>{
-                      <option key={index}>{item.id}</option>
-               }):<h4>Loading.....</h4>} */}
-
                </Form.Select>
+
+
+
+
                   </div>
                   <div className="row3">
                   <p style={{marginRight:"28px"}}>Article :</p>
-                  <Form.Select className="familleForm" value={articleChosen} onChange={onArticleSelect}>   
+                  <Form.Select className="familleForm" value={articleChosen} onChange={onArticleSelect} >   
                <option></option>
                {articles.map((article)=>{
-                return(
+                return( 
                 <option key={article.id}>{article.name}</option>
                 )
                })}   
-                   
-
-               {/* {article ? article.map((item,index)=>{
-                      <option key={index} onClick={AfficherPrixEtId}>{article.name}</option>
-               }):<h4>Loading.....</h4>} */}
 
                </Form.Select>
                <p style={{marginRight:"5px"}}>Prix :</p>
-               <input className="priceInput" ref={prixRef} name='prix' onChange={HandelInput} /* value={prix} */></input>
+               <input className="priceInput" id="price" ref={prixRef} name='prix' onChange={HandelInput} /* value={prix} */></input>
                   </div>
                </div>
                <div className="priceDiv">

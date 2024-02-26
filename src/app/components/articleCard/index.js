@@ -1,4 +1,4 @@
-
+'use client'
 import Nav from "../nav";
 import CodePrice from "../codePrice";
 import "../../styles/tableTotal.css"
@@ -10,13 +10,236 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { FaPlus, FaMinus, FaCheck,FaPen} from 'react-icons/fa';
+import { createContext, useEffect, useRef,useState, } from "react";
+import "../../styles/codePrice.css"
+import Form from 'react-bootstrap/Form';
+import { Modal, Button } from 'react-bootstrap';
 
 export default function ArticleCard() {
+  const cbRef = useRef(null);
+  const qteRef = useRef(null);
+  const prixRef = useRef(null);
+  const [input,setInput]=useState({})
+
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      if (input.cb.length === 13) {
+        qteRef.current.focus();
+      } else {
+        console.log("Bonjour");
+      }
+    }
+  };
+
+
+  const HandelInput = (e) => {
+    const name = e.target.name;
+    let value = e.target.value;
+    
+    // Vérifier si la valeur est numérique
+    if (!isNaN(value)) {
+      // Limiter la longueur à 13 chiffres pour le champ 'cb'
+      if (name === 'cb' && value.length >= 13) {
+        return;
+      }
+      
+      setInput(val => ({ ...val, [name]: value }));
+    } else {
+      setInput(val => ({ ...val, [name]: '' }));
+    }
+  };
+
+
+
+
+
+  const articles = [
+    {
+      id: "1",
+      name: "bimo",
+      price: 150,
+    },
+    {
+      id: "2",
+      name: "hrissa",
+      price: 120,
+    },
+    {
+      id: "3",
+      name: "signal",
+      price: 250
+    },
+    {
+      id: "4",
+      name: "riz",
+      price: 320
+    },
+    {
+      id: "5",
+      name: "lentilles",
+      price: 160
+    },
+    {
+      id: "6",
+      name: "bonbon",
+      price: 20
+    },
+    {
+      id: "7",
+      name: "moment",
+      price: 190
+    }
+]
+
+const [bon,setBon] = useState([]);
+const [id,setId] = useState(null);
+
+
+const [price,setPrice] = useState(null);
+const handleChangePrice = (e) =>{
+  setPrice(parseInt(e.target.value));
+}
+
+const [qte,setQte] = useState(null);
+const handleChangeQte = (e) => {
+  setQte(parseInt(e.target.value));
+}
+
+const [articleChosen,setArticleChosen] = useState("");
+const onArticleSelect = (e)=>{
+  setArticleChosen(e.target.value);
+  const priceInput = document.getElementById("price");
+  const qteInput = document.getElementById("qte")
+  qteInput.value = 1;
+  setQte(1);
+  qteRef.current.focus();
+  articles.map((article)=>{
+    if(article.name === e.target.value){
+      priceInput.value = article.price;
+      setPrice(article.price);
+      setId(article.id);
+    }
+  })
+}
+
+const handleQteKeyPress = (event) => {
+  if (event.key === 'Enter') {
+    const newObject = {
+      id: id,
+      name: articleChosen,
+      price: price,
+      qte: qte,
+      total : price * qte 
+    };
+    setBon((prev)=>[...prev,newObject]);
+  }
+};
+
+const [totalQte,setTotalQte] = useState(0);
+const [nbrArticles,setNbrArticles] = useState(0);
+const [totalPrice,setTotalPrice] = useState(0)
+
+useEffect(()=>{
+  // console.log(bon);
+  bon.map((bon)=>{
+    setTotalQte(totalQte + 1)
+    setNbrArticles(nbrArticles + bon.qte)
+    setTotalPrice(totalPrice + bon.total)
+  })
+},[bon])
+
+
+const [selectedTr, setSelectedTr] = useState(null);
+
+const handleTdClick = (event) => {
+  // Remove the background color from the previously selected tr, if any
+  if (selectedTr) {
+    selectedTr.style.backgroundColor = '';
+  }
+
+  // Find the parent tr of the clicked td
+  const tr = event.target.closest('tr');
+  if (tr) {
+    // Set the background color for the parent tr
+    tr.style.backgroundColor = 'lightblue';
+    // Update the selectedTr state to the parent tr
+    setSelectedTr(tr);
+  }
+};
+
+const handleItem = (item) =>{
+  console.log(item);
+}
+
+
+
+
 
     return(
         <>
             <Nav />
-            <CodePrice />
+            <div className="codePriceDiv">
+               <div className="codeDiv">
+                  <div className="row1">
+                   <p style={{marginRight:"45px"}}>Code</p>
+                   <input className="codeInput" type='text' ref={cbRef} name='cb' onKeyPress={handleKeyPress} value={input.cb} defaultValue={0} onChange={HandelInput}></input>
+
+
+
+                   <p style={{marginRight:"5px"}}>Qte :</p>
+                   <input className="qteInput" id="qte" ref={qteRef} onChange={handleChangeQte} onKeyPress={handleQteKeyPress}></input>
+
+
+
+                  </div>
+
+
+
+                  <div className="row2">
+                   <p style={{marginRight:"25px"}}>Famille:</p>
+                   <Form.Select className="familleForm">   
+
+               </Form.Select>
+
+
+
+               <p style={{marginRight:"26px"}}>ID</p>
+                 <input className="idInput" name="id" /* value={id} */></input>
+                 <Form.Select className="familleForm">  
+
+               </Form.Select>
+
+
+
+
+                  </div>
+                  <div className="row3">
+                  <p style={{marginRight:"28px"}}>Article :</p>
+                  <Form.Select className="familleForm" value={articleChosen} onChange={onArticleSelect} >   
+               <option></option>
+               {articles.map((article)=>{
+                return( 
+                <option key={article.id}>{article.name}</option>
+                )
+               })}   
+
+               </Form.Select>
+               <p style={{marginRight:"5px"}}>Prix :</p>
+               <input className="priceInput" id="price" onChange={handleChangePrice}></input>
+                  </div>
+               </div>
+               <div className="priceDiv">
+                <p>{totalPrice}</p>
+               </div>
+
+            </div>
+
+
+
+
+
+
             <div className="tableTotalDiv">
               <div className="tableDiv">
               <TableContainer component={Paper}>
@@ -30,18 +253,19 @@ export default function ArticleCard() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {/* {rows.map((row) => ( */}
+                    {bon.map((item) => (
                       <TableRow
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        onClick={()=>handleItem(item)}
                       >
-                        <TableCell component="th" scope="row">
-                          Article1
+                        <TableCell onClick={handleTdClick} component="th" scope="row">
+                          {item.name}
                         </TableCell>
-                        <TableCell align="right">1000</TableCell>
-                        <TableCell align="right">2</TableCell>
-                        <TableCell align="right">2000</TableCell>
+                        <TableCell onClick={handleTdClick} align="right">{item.price}</TableCell>
+                        <TableCell onClick={handleTdClick} align="right">{item.qte}</TableCell>
+                        <TableCell onClick={handleTdClick} align="right">{item.total}</TableCell>
                       </TableRow>
-                    {/* ))} */}
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -50,9 +274,9 @@ export default function ArticleCard() {
               <div className="qteDiv">
                <div className="totalDiv">
                 <h2>Total Qte :</h2>
-                <h2 style={{color:'red'}}>0</h2>
+                <h2 style={{color:'red'}}>{totalQte}</h2>
                 <h2>Nombre Articles :</h2>
-                <h2 style={{color:'red'}}>0</h2>
+                <h2 style={{color:'red'}}>{nbrArticles}</h2>
                </div> 
                <div className="qteDivBtnsDiv">
                  <div className="fsRow">
