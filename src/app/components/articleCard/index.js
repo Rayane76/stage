@@ -14,6 +14,7 @@ import { createContext, useEffect, useRef,useState, } from "react";
 import "../../styles/codePrice.css"
 import Form from 'react-bootstrap/Form';
 import { Modal, Button } from 'react-bootstrap';
+import { useRouter } from "next/navigation";
 
 export default function ArticleCard() {
   const cbRef = useRef(null);
@@ -123,8 +124,32 @@ const onArticleSelect = (e)=>{
   })
 }
 
+const router = useRouter();
+
 const handleQteKeyPress = (event) => {
   if (event.key === 'Enter') {
+    const idExists = bon.some(item => item.id === id);
+    if(idExists){
+      const qteInput = document.getElementById("qte");
+      bon.map((bon)=>{
+           if(bon.id === id){
+            let fsTotal = bon.total;
+            let fsQte = bon.qte;
+            bon.qte = qteInput.value;
+            bon.total = bon.price * qteInput.value;
+            if(fsQte < bon.qte){
+              setNbrArticles(nbrArticles + (bon.qte - fsQte))
+              setTotalPrice(totalPrice + (bon.total - fsTotal))
+            }
+            else{
+              setNbrArticles(nbrArticles - (fsQte - bon.qte))
+              setTotalPrice(totalPrice - (fsTotal - bon.total))
+            }
+           }
+      }) 
+     router.refresh();
+    }
+    else{
     const newObject = {
       id: id,
       name: articleChosen,
@@ -133,8 +158,17 @@ const handleQteKeyPress = (event) => {
       total : price * qte 
     };
     setBon((prev)=>[...prev,newObject]);
+    setArticleChosen("");
+    const priceInput = document.getElementById("price");
+    const qteInput = document.getElementById("qte");
+    priceInput.value = "";
+    qteInput.value = "";
+    setQte(null);
+    setPrice(null);
+  
   }
-};
+}
+}
 
 const [totalQte,setTotalQte] = useState(0);
 const [nbrArticles,setNbrArticles] = useState(0);
@@ -169,9 +203,29 @@ const handleTdClick = (event) => {
 };
 
 const handleItem = (item) =>{
-  console.log(item);
+  setId(item.id);
+  const priceInput = document.getElementById("price");
+  const qteInput = document.getElementById("qte");
+  priceInput.value = item.price;
+  qteInput.value = item.qte;
 }
 
+const handleDelete = ()=>{
+  if(bon.length > 0 && id != null){
+    const indexToDelete = bon.findIndex(item => item.id === id);
+    const found = bon.find(item => item.id === id);
+    if (indexToDelete !== -1) {
+      // Delete the object at the indexToDelete
+      bon.splice(indexToDelete, 1);
+    }
+    
+    setTotalQte(totalQte -1);
+    setNbrArticles(nbrArticles - found.qte);
+    setTotalPrice(totalPrice - found.total);
+
+    router.refresh();
+}
+}
 
 
 
@@ -286,7 +340,7 @@ const handleItem = (item) =>{
                  </div>
                  <div className="scndRow">
                    <button className="fsBtn">Ajouter <FaPlus style={{color:'green'}} /></button>
-                   <button className="fsBtn">Effacer <FaMinus  style={{color:'red'}}/></button>
+                   <button onClick={handleDelete} className="fsBtn">Effacer <FaMinus  style={{color:'red'}}/></button>
                  </div>
                </div>
               </div>
