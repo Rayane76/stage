@@ -3,7 +3,7 @@ import "../../styles/codePrice.css"
 import Form from 'react-bootstrap/Form';
 import { Modal, Button } from 'react-bootstrap';
 import { createContext, useEffect, useRef,useState, } from "react";
-import axios from 'axios';
+import axios from "axios";
 
 //utilsier create context pour peut transporter larticel vers la page des tableaux
 /* export default ArtcileConetxt=createContext() */
@@ -40,6 +40,7 @@ useEffect(() => {
   })
   .catch(err => console.log(err));
 }, []); */
+
 
 
 
@@ -125,6 +126,51 @@ useEffect(() => {
      .catch(err=>console.log(err));
     } */
 
+
+    const articles = [
+      {
+        id: "1",
+        name: "bimo",
+        price: 150,
+      },
+      {
+        id: "2",
+        name: "hrissa",
+        price: 120,
+      },
+      {
+        id: "3",
+        name: "signal",
+        price: 250
+      },
+      {
+        id: "4",
+        name: "riz",
+        price: 320
+      },
+      {
+        id: "5",
+        name: "lentilles",
+        price: 160
+      },
+      {
+        id: "6",
+        name: "bonbon",
+        price: 20
+      },
+      {
+        id: "7",
+        name: "moment",
+        price: 190
+      }
+  ]
+
+  const [articleChosen,setArticleChosen] = useState("");
+  const onArticleSelect = (e)=>{
+    setArticleChosen(e.target.value);
+
+  }
+
     return(
         <>
             <div className="codePriceDiv">
@@ -156,8 +202,15 @@ useEffect(() => {
                   </div>
                   <div className="row3">
                   <p style={{marginRight:"28px"}}>Article :</p>
-                  <Form.Select className="familleForm">   
+                  <Form.Select className="familleForm" value={articleChosen} onChange={onArticleSelect}>   
+               <option></option>
+               {articles.map((article)=>{
+                return(
+                <option key={article.id}>{article.name}</option>
+                )
+               })}   
                    
+
                {/* {article ? article.map((item,index)=>{
                       <option key={index} onClick={AfficherPrixEtId}>{article.name}</option>
                }):<h4>Loading.....</h4>} */}

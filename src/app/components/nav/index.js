@@ -17,15 +17,31 @@ export default function Nav(){
   .catch(err=>console.log(err))
 },[]) */
 
-    const maintenant = new Date();
-    const jour = maintenant.getDate().toString().padStart(2, '0');
-    const mois = (maintenant.getMonth() + 1).toString().padStart(2, '0'); // Les mois commencent à partir de 0
-    const annee = maintenant.getFullYear();
-    const heure = maintenant.getHours().toString().padStart(2, '0');
-    const minutes = maintenant.getMinutes().toString().padStart(2, '0');
-    const secondes = maintenant.getSeconds().toString().padStart(2, '0');
-    
-    const dateEtHeureActuelles = `${jour}/${mois}/${annee} ${heure}:${minutes}:${secondes}`;
+    const [maintenant,setMaintenant] = useState("");
+
+    useEffect(()=>{
+      setMaintenant(new Date());
+    },[]);
+
+    let jour = ""
+    let mois = ""
+    let annee = ""
+    let heure = ""
+    let minutes = ""
+    let secondes = ""
+
+    let dateEtHeureActuelles = ""
+
+
+    if(maintenant != ""){
+     jour = maintenant.getDate().toString().padStart(2, '0');
+     mois = (maintenant.getMonth() + 1).toString().padStart(2, '0'); // Les mois commencent à partir de 0
+     annee = maintenant.getFullYear();
+     heure = maintenant.getHours().toString().padStart(2, '0');
+     minutes = maintenant.getMinutes().toString().padStart(2, '0');
+     secondes = maintenant.getSeconds().toString().padStart(2, '0');
+     dateEtHeureActuelles = `${jour}/${mois}/${annee} ${heure}:${minutes}:${secondes}`;
+    }
 
     return(
         <>
