@@ -9,7 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { FaPlus, FaMinus, FaCheck,FaPen} from 'react-icons/fa';
+import { FaTimes ,FaPlus, FaMinus, FaCheck,FaPen} from 'react-icons/fa';
 import { createContext, useEffect, useRef,useState, } from "react";
 import "../../styles/codePrice.css"
 import Form from 'react-bootstrap/Form';
@@ -227,6 +227,44 @@ const handleDelete = ()=>{
 }
 }
 
+const handleAdd = ()=>{
+  if(bon.length > 0 && id != null){
+    bon.map((bon)=>{
+      if(bon.id === id){
+        bon.qte = bon.qte + 1;
+        bon.total = bon.total + bon.price;
+        setNbrArticles(nbrArticles + 1)
+        setTotalPrice(totalPrice + bon.price);
+      }
+    })
+   router.refresh();
+  }
+}
+
+const handleMinus = ()=>{
+  if(bon.length > 0 && id != null){
+    bon.map((bon)=>{
+      if(bon.id === id){
+        bon.qte = bon.qte - 1;
+        bon.total = bon.total - bon.price;
+        setNbrArticles(nbrArticles - 1);
+        setTotalPrice(totalPrice - bon.price);
+        if(bon.qte === 0){
+          setTotalQte(totalQte - 1);
+        }
+      }
+    })
+
+    const indexToDelete = bon.findIndex(item => item.qte === 0);
+    if (indexToDelete !== -1) {
+      // Delete the object at the indexToDelete
+      bon.splice(indexToDelete, 1);
+    }
+
+    router.refresh();
+  }
+}
+
 
 
 
@@ -336,11 +374,11 @@ const handleDelete = ()=>{
                  <div className="fsRow">
                    <button className="fsBtn">Enregister<FaCheck style={{color:'green'}} /></button>
                    <button className="fsBtn">Inserer</button>
-                   <button className="fsBtn">Modifier<FaPen style={{color:'blue'}} /></button>
+                   <button onClick={handleMinus} className="fsBtn">Diminuer <FaMinus  style={{color:'red'}}/></button>
                  </div>
                  <div className="scndRow">
-                   <button className="fsBtn">Ajouter <FaPlus style={{color:'green'}} /></button>
-                   <button onClick={handleDelete} className="fsBtn">Effacer <FaMinus  style={{color:'red'}}/></button>
+                   <button onClick={handleAdd} className="fsBtn">Ajouter <FaPlus style={{color:'green'}} /></button>
+                   <button onClick={handleDelete} className="fsBtn">Effacer <FaTimes  style={{color:'red'}}/></button>
                  </div>
                </div>
               </div>
