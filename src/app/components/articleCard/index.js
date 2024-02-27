@@ -20,6 +20,7 @@ export default function ArticleCard() {
   const cbRef = useRef(null);
   const qteRef = useRef(null);
   const prixRef = useRef(null);
+  const priceRef = useRef(null);
   const [input,setInput]=useState({})
 
 
@@ -211,7 +212,21 @@ const handleItem = (item) =>{
 }
 
 const handleDelete = ()=>{
-  if(bon.length > 0 && id != null){
+  if(bon.length > 0){
+    if(id === null){
+      const indexToDelete = bon.findIndex(item => item.name === "Divers")
+      const found = bon.find(item => item.name === "Divers");
+      if (indexToDelete !== -1) {
+        // Delete the object at the indexToDelete
+        bon.splice(indexToDelete, 1);
+      }
+      
+      setTotalQte(totalQte -1);
+      setNbrArticles(nbrArticles - found.qte);
+      setTotalPrice(totalPrice - found.total);
+  
+    }
+    else{
     const indexToDelete = bon.findIndex(item => item.id === id);
     const found = bon.find(item => item.id === id);
     if (indexToDelete !== -1) {
@@ -223,12 +238,24 @@ const handleDelete = ()=>{
     setNbrArticles(nbrArticles - found.qte);
     setTotalPrice(totalPrice - found.total);
 
+    }
     router.refresh();
 }
 }
 
 const handleAdd = ()=>{
-  if(bon.length > 0 && id != null){
+  if(bon.length > 0){
+    if(id === null){
+     bon.map((bon)=>{
+      if(bon.id === "Divers"){
+        bon.qte = bon.qte + 1;
+        bon.total = bon.total + bon.price;
+        setNbrArticles(nbrArticles + 1)
+        setTotalPrice(totalPrice + bon.price);
+      }
+     })
+    }
+    else{
     bon.map((bon)=>{
       if(bon.id === id){
         bon.qte = bon.qte + 1;
@@ -237,12 +264,27 @@ const handleAdd = ()=>{
         setTotalPrice(totalPrice + bon.price);
       }
     })
+  }
    router.refresh();
   }
 }
 
 const handleMinus = ()=>{
-  if(bon.length > 0 && id != null){
+  if(bon.length > 0){
+    if(id === null){
+      bon.map((bon)=>{
+       if(bon.name === "Divers"){
+        bon.qte = bon.qte - 1;
+        bon.total = bon.total - bon.price;
+        setNbrArticles(nbrArticles - 1);
+        setTotalPrice(totalPrice - bon.price);
+        if(bon.qte === 0){
+          setTotalQte(totalQte - 1);
+        }
+       }
+      })
+    }
+    else{
     bon.map((bon)=>{
       if(bon.id === id){
         bon.qte = bon.qte - 1;
@@ -254,7 +296,7 @@ const handleMinus = ()=>{
         }
       }
     })
-
+  }
     const indexToDelete = bon.findIndex(item => item.qte === 0);
     if (indexToDelete !== -1) {
       // Delete the object at the indexToDelete
@@ -262,6 +304,31 @@ const handleMinus = ()=>{
     }
 
     router.refresh();
+  }
+}
+
+const handleInserer = ()=>{
+   priceRef.current.focus();
+   const qteInput = document.getElementById("qte");
+   qteInput.value = 1;
+   setQte(1);
+}
+
+const handlePriceKeyPress = (event)=>{
+  if(event.key === "Enter"){
+    const newObject = {
+      name: "Divers",
+      price: price,
+      qte: qte,
+      total : price * qte 
+    }
+    setBon((prev)=>[...prev,newObject]);
+    const priceInput = document.getElementById("price");
+    const qteInput = document.getElementById("qte");
+    priceInput.value = "";
+    qteInput.value = "";
+    setQte(null);
+    setPrice(null);
   }
 }
 
@@ -318,7 +385,7 @@ const handleMinus = ()=>{
 
                </Form.Select>
                <p style={{marginRight:"5px"}}>Prix :</p>
-               <input className="priceInput" id="price" onChange={handleChangePrice}></input>
+               <input ref={priceRef} className="priceInput" id="price" onChange={handleChangePrice} onKeyPress={handlePriceKeyPress}></input>
                   </div>
                </div>
                <div className="priceDiv">
@@ -373,7 +440,7 @@ const handleMinus = ()=>{
                <div className="qteDivBtnsDiv">
                  <div className="fsRow">
                    <button className="fsBtn">Enregister<FaCheck style={{color:'green'}} /></button>
-                   <button className="fsBtn">Inserer</button>
+                   <button onClick={handleInserer} className="fsBtn">Inserer</button>
                    <button onClick={handleMinus} className="fsBtn">Diminuer <FaMinus  style={{color:'red'}}/></button>
                  </div>
                  <div className="scndRow">
