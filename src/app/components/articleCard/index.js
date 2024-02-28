@@ -15,7 +15,7 @@ export default function ArticleCard() {
 
     return(
         <>
-            <Nav />
+            
             <CodePrice />
             <div className="tableTotalDiv">
               <div className="tableDiv">
