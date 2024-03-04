@@ -34,3 +34,23 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Run the Django Server
+
+I will add a requirements.txt later for easier packages download.
+
+```bash
+pip install django
+pip install djangorestframework
+pip install python-barcode
+pip install reportlab
+pip install svglib
+```
+Then simply cd into backend and run the server.
+
+```bash
+cd backend
+python manage.py runserver
+```
+
+You will find all the API routes in: ``127.0.0.1:8000/api/model_name/...`` it will be displayed anyways for you.
