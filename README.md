@@ -53,4 +53,5 @@ cd backend
 python manage.py runserver
 ```
 
-You will find all the API routes in: ``127.0.0.1:8000/api/model_name/...`` it will be displayed anyways for you.
+You will find all the API routes in: ``127.0.0.1:8000/api/app_name/model_file_name/model_name`` it will be displayed anyways for you.
+Example: ``http://127.0.0.1:8000/api/comptoire/entite-marchandise/(famille or s-famille or s-article or article)``
