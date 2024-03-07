@@ -15,6 +15,7 @@ import "../../styles/codePrice.css"
 import Form from 'react-bootstrap/Form';
 import { Modal, Button } from 'react-bootstrap';
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function ArticleCard() {
   const cbRef = useRef(null);
@@ -22,6 +23,8 @@ export default function ArticleCard() {
   const prixRef = useRef(null);
   const priceRef = useRef(null);
   const [input,setInput]=useState({})
+
+
 
 
   const handleKeyPress = (event) => {
@@ -108,6 +111,8 @@ const handleChangeQte = (e) => {
   setQte(parseInt(e.target.value));
 }
 
+const [isDisabled,setIsDisabled] = useState(false);
+
 const [articleChosen,setArticleChosen] = useState("");
 const onArticleSelect = (e)=>{
   setArticleChosen(e.target.value);
@@ -121,6 +126,7 @@ const onArticleSelect = (e)=>{
       priceInput.value = article.price;
       setPrice(article.price);
       setId(article.id);
+      setIsDisabled(true);
     }
   })
 }
@@ -150,7 +156,7 @@ const handleQteKeyPress = (event) => {
       }) 
      router.refresh();
     }
-    else{
+    else{  
     const newObject = {
       id: id,
       name: articleChosen,
@@ -166,7 +172,7 @@ const handleQteKeyPress = (event) => {
     qteInput.value = "";
     setQte(null);
     setPrice(null);
-  
+    setIsDisabled(false);
   }
 }
 }
@@ -174,6 +180,19 @@ const handleQteKeyPress = (event) => {
 const [totalQte,setTotalQte] = useState(0);
 const [nbrArticles,setNbrArticles] = useState(0);
 const [totalPrice,setTotalPrice] = useState(0)
+
+  const [allArticles,setAllArticles] = useState(null);
+
+  useEffect(()=>{
+    getData();
+  },[]);
+
+  const getData = async ()=>{
+    const result = await axios.get("http://localhost:8000/api/comptoire/entite-marchandise/article/");
+    setAllArticles(result.data);
+    console.log(allArticles);
+
+  }
 
 useEffect(()=>{
   // console.log(bon);
@@ -209,6 +228,12 @@ const handleItem = (item) =>{
   const qteInput = document.getElementById("qte");
   priceInput.value = item.price;
   qteInput.value = item.qte;
+  if(item.name != "Divers"){
+    setIsDisabled(true);
+  }
+  else{
+    setIsDisabled(false);
+  }
 }
 
 const handleDelete = ()=>{
@@ -308,6 +333,7 @@ const handleMinus = ()=>{
 }
 
 const handleInserer = ()=>{
+   setIsDisabled(false);
    priceRef.current.focus();
    const qteInput = document.getElementById("qte");
    qteInput.value = 1;
@@ -385,7 +411,7 @@ const handlePriceKeyPress = (event)=>{
 
                </Form.Select>
                <p style={{marginRight:"5px"}}>Prix :</p>
-               <input ref={priceRef} className="priceInput" id="price" onChange={handleChangePrice} onKeyPress={handlePriceKeyPress}></input>
+               <input disabled={isDisabled} ref={priceRef} className="priceInput" id="price" onChange={handleChangePrice} onKeyPress={handlePriceKeyPress}></input>
                   </div>
                </div>
                <div className="priceDiv">
