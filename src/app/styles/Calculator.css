@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+*{
+    font-family: "Rubik", sans-serif;
+  }
+.calculator-container {
+    max-width: 500px;
+    margin: 0 auto;
+    margin-top: 0.4rem;
+    
+}
+
+.calculator-key {
+    width: 20.8%;
+    height: 90%;
+    margin: 0.6rem;
+
+}
+
+.clear-button {
+    background-color: #f44336;
+    color: #fff;
+    border: none;
+}
+
+.clear-button:hover {
+    background-color: #d32f2f;
+}

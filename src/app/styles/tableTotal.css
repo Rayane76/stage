@@ -1,38 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+*{
+    font-family: "Rubik", sans-serif;
+  }
+
+
 .tableTotalDiv{
-    margin-top: 20px;
     display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: start;
+    width: 100%;
+    height: 100%;
 }
 
 .tableDiv{
     width: 70%;
 }
 
+
 .totalDiv{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
+    gap: 1rem;
     align-items: center;
 }
 
 .qteDiv{
-    width: 30rem;
-    padding: 0.5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: rgb(206, 206, 206);
+    background-color: #b5c0d076;
+    padding: 10px;
+    height: 200px;
+    width: 33.5%;
 }
 
 .fsRow{
 margin-bottom: 10px;
+width: 25rem;
+display: flex;
+flex-direction: row;
+align-items: center;
+justify-content: center;
+gap:0.3rem
 }
-
 .scndRow{
-
+    margin-bottom: 10px;
+    width: 15rem;
+    margin-left: 5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap:0.3rem
 }
 
 .fsBtn{
     padding: 10px;
     margin-right: 5px;
+    border:none;
+}
+.fsBtn:hover{
+    background-color: #BFCFE7;
 }

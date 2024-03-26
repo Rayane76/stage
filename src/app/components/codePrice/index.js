@@ -1,10 +1,14 @@
-'use client'
+"use client"
 import "../../styles/codePrice.css"
 import Form from 'react-bootstrap/Form';
 import { Modal, Button } from 'react-bootstrap';
 import { createContext, useEffect, useRef,useState, } from "react";
 import axios from 'axios';
 import Nav from '../nav/index'
+import { FaPlus, FaMinus, FaCheck,FaPen} from 'react-icons/fa';
+import { useCalculator } from '../utils/resultProvider'
+import { useInfo } from '../utils/infoProvider'; // Importez le hook useCalculator
+
 
 
 
@@ -14,89 +18,56 @@ export default function CodePrice(){
    const cbRef = useRef(null);
    const qteRef = useRef(null);
    const prixRef = useRef(null);
-   const [input,setInput]=useState({});
-   const [total,setTotal]=useState(0);
+   const [input,setInput]=useState({qte:1});
    const [ajouter,setAjouter]=useState(false);
-  
    const [showModal, setShowModal] = useState(true);
-   const handleClose = () => setShowModal(false); 
-   const [nvInputs,setNvInpust]=useState({}); 
-   
-
-   const exemple=[{article:"sucre",prix:120,id:1},
-    {article:"sel",prix:200,id:2},
-    {article:"cafe",prix:300,id:3},
-    {article:"eau",prix:124,id:4},
-    {article:"pain",prix:12,id:5},
-    {article:"miele",prix:400,id:6},
-  ]
+   const handleClose = () => {setShowModal(false); setAjouter(false);  }
+   const [nvInputs,setNvInput]=useState({}); 
+   const [article, setArticl] = useState([]);
+   const { result} = useCalculator();
+   const { info, setInfo } = useInfo();
 
 
-
-
-const [famille, setFamille] = useState([]);
-const [article, setArticl] = useState([]);
-const [prix,setPrix]=useState(0)
-const [id,setId]=useState(0)
-
-
+//fetcher les articles
 useEffect(() => {
-  Promise.all([
-    axios.get('/api/famille'),
-    axios.get('/api/articl'),
-    axios.get('/api/id'),
-    axios.get('/api/prix'),
+  axios.get('http://127.0.0.1:8000/api/comptoire/entite-marchandise/article/')
+    .then(res => {
+      setArticl(res.data);
+    })
+    .catch(err => {
+      console.error('Error fetching data:', err);
+    });
+}, []);
+
+
+
+
+// verfier lexistance de code bare entre 
+const VerifierCodeBare = (codebare) => {
+  // Utiliser find() pour rechercher un élément avec le code-barres donné
+  return article.find(item => item.barrcode === codebare) !== undefined;
+}
     
-  ])
-  .then(([familleRes, articlRes, idRes,prixRes]) => {
-    setFamille(familleRes.data);
-    setArticl(articlRes.data);
-    setId(idRes.data);
-    setPrix(prixRes.data);
-  
-  })
-  .catch(err => console.log(err));
-}, []); 
-
-
-
-
-
-   const handleKeyPress = (event) => {
-      if (event.key === 'Enter') {
-        if (input.cb.length === 13) {
-          qteRef.current.focus();
-          setAjouter(true);
-        } else {
-          console.log("Bonjour");
-        }
-      }else if(event.key==='*'){
-        setTotal (input.qte*input.prix)
+const handleKeyPress = (event) => {
+  if (event.key === 'Enter') {
+    if (input.cb.length === 13) {
+      // Appeler VerifierCodeBare avec le code-barres actuel
+      if (VerifierCodeBare(input.cb)) {
+        // Le code-barres existe, focus sur le champ de quantité
+        qteRef.current.focus();
+      } else {
+        // Le code-barres n'existe pas, setAjouter(true) pour ouvrir la fenêtre d'ajout d'un article
+        setAjouter(true);
       }
-    };
-
-
-    
-    /*  const handleKeyPress = (event) => {
-      if (event.key === 'Enter') {
-        if (input.cb.length === 13) {
-          axios.post('/api/codebar',{codebar=input.cb})
-          .then(res=>{
-            if(res.data.message==="Success"){
-               qteRef.current.focus();
-            }
-            else{
-               alert('Element non Trouver')
-               setAjoute(true);
-            }
-          })
-        } else {
-          console.log("Bonjour");
-        }
-      }
-    }; */
+    }
+  } else {
+    // Réinitialiser l'état ajouter à true si un code-barres incorrect est entré
+    setAjouter(false);
+  }
+};
      
-    
+ 
+//stocker les informations des input filed (code bare article id .....)
      const HandelInput = (e) => {
       const name = e.target.name;
       let value = e.target.value;
@@ -114,15 +85,31 @@ useEffect(() => {
       }
     };
 
+
+    
+
+//la fonction pour selecionner un artilce sont id et famille automatiquemet s'affiche    
     const HandelArticl=(e)=>{
       e.preventDefault();
-      const selectedItem=exemple.find(item=>item.article===e.target.value);
+      const selectedItem=article.find(item=>item.codif===e.target.value);
       if(selectedItem){
+        
         setInput(prev=>({
           ...prev,
           id: selectedItem.id,
-          prix: selectedItem.prix,
+          prix: selectedItem.P_vente,
         }))
+        
+        setInfo(prev => [
+          ...prev,
+          {
+            article: selectedItem.codif,
+            qte: input.qte,
+            prix: selectedItem.P_vente,
+          }
+        ]);
+       
+        
       }
     }
 
@@ -132,90 +119,109 @@ useEffect(() => {
      const HandelNvInput = (e) => {
       const name = e.target.name;
       let value = e.target.value;
-        setInput(val => ({ ...val, [name]: value }));
+      setNvInput(val => ({ ...val, [name]: value }));
      
     }
      
   
-    const HandelAjouterElement=(e)=>{
-      e.preventDefault()
-      axios.post('/api/AjouterElement',{article:nvInputs.article,prix:nvInputs.prix,chemin:nvInputs.chemin,codebare:input.cb})
-      .then(res=>{
-        alert('Vous Ave Ajouter Un element')
-        console.log(res)})
-      .catch(err=>console.log(err))
-    } 
-
-     /* const AfficherPrixEtId=(e)=>{
-     e.preventDefault();
-     axios.get('/api/prixArticle')
-     .then(res=>{
-      if(res.data.message==='success'){
-        setPrix(res.data.prix)
-        setId(res.data.id)
-        SetClickedArticle(e.target.value)
-      }else{
-        console.log('Prix non etablit')
-      }
-     })
-     .catch(err=>console.log(err));
+    const HandelAjouterElement = (e) => {
+      e.preventDefault();
+      const nouvelArticle = {
+        codif: nvInputs.article,
+        barrcode: input.cb,
+        P_vente: parseFloat(nvInputs.prix),
+        id: 1, // Remplacer 1 par l'ID approprié de l'article
+        id_S_article: 1, // Remplacer 1 par l'ID approprié de la sous-catégorie de l'article
+        id_S_famille: 1, // Remplacer 1 par l'ID approprié de la famille de l'article
+        fournisseur_best: 2, // Remplacer 2 par l'ID approprié du fournisseur
+      };
+      
+      // Mise à jour de l'état 'article' en ajoutant le nouvel article à la liste existante
+      setArticl(prevArticles => [...prevArticles, nouvelArticle]);
+      alert('article ajouter !!!!')
+      // Réinitialiser les champs d'entrée
+      setInput({});
+      setNvInput({});
+      setAjouter(false);
+    };
+     
+    /* ajouter l'article dans la base de donne */
+   /*  const HandelAjouterElementDB=(e)=>{
+      e.preventDefault();
+      axios.post('')
     } */
-
+   
     return(
-        <>   <Nav prixRef={prixRef} article={exemple}/>
-            <div className="codePriceDiv">
+        <>   <Nav prixRef={prixRef} article={article}/>
+            <div className="codePriceDiv" >
                <div className="codeDiv">
                   <div className="row1">
-                   <p style={{marginRight:"45px"}}>Code</p>
+                    <div className="code">
+                   <p style={{marginTop:'10px'}}>Code:</p>
                    <input className="codeInput" type='text' ref={cbRef} name='cb' onKeyPress={handleKeyPress} value={input.cb} defaultValue={0} onChange={HandelInput}/>
+                   </div>
+                   <div className="qte">
                    <p style={{marginRight:"5px"}}>Qte :</p>
-                   <input className="qteInput" ref={qteRef} name='qte' onChange={HandelInput} value={input.qte} defaultValue={1}/>
+                   <input className="qteInput" ref={qteRef} name='qte' onChange={HandelInput}  value={input.qte} defaultValue={1}/>
+                   </div>
                   </div>
                   <div className="row2">
-                   <p style={{marginRight:"25px"}}>Famille:</p>
+                   <p style={{marginRight:"15px"}}>Famille:</p>
                    <Form.Select className="familleForm">   
 
-               {/* {famille ? famille.map((item,index)=>{
-                      <option key={index}>{item.name}</option>
-               }):<h4>Loading.....</h4>} */}
+                {article.map((item,index)=>{
+                      <option key={index}>{item.id_S_famille}</option>
+               })} 
 
                </Form.Select>
-                <p style={{marginRight:"26px"}}>ID</p>
-                 <input className="idInput" name="id"/>
-                 <Form.Select className="familleForm" onChange={HandelInput} value={input.id}>  
+
+               <div className="idForm">
+                <p style={{marginTop:'10px'}}>ID:</p>
+                 <Form.Select className="familleForm2" onChange={HandelInput} value={input.id}>  
 
 
-                  {exemple.map((item,index)=>(
+                  {article.map((item,index)=>(
                     <option key={index}>{item.id}</option>
                   ))}
 
-
-               {/* {id ? id.map((item,index)=>{
-                      <option key={index}>{item.id}</option>
-               }):<h4>Loading.....</h4>} */}
-
                </Form.Select>
+               </div>
                   </div>
                   <div className="row3">
-                  <p style={{marginRight:"28px"}}>Article :</p>
+                  <p style={{marginRight:"15px",marginTop:'6px'}}>Article:</p>
                   <Form.Select className="familleForm" onChange={HandelArticl}>   
-
-
-                  {exemple.map((item,index)=>(
-                    <option key={index}>{item.article}</option>
+                  {article.map((item,index)=>(
+                    <option key={index}>{item.codif}</option>
                   ))}
 
-               {/* {article ? article.map((item,index)=>{
-                      <option key={index} onClick={AfficherPrixEtId}>{article.name}</option>
-               }):<h4>Loading.....</h4>} */}
+  
 
                </Form.Select>
-               <p style={{marginRight:"5px"}}>Prix :</p>
+               <p style={{marginRight:"5px",marginTop:'6px'}}>Prix:</p>
                <input className="priceInput" ref={prixRef} name='prix' onChange={HandelInput} value={input.prix} /* value={prix} *//>
                   </div>
                </div>
+               <div className="qteDiv">
+               <div className="totalDiv">
+                <h5>Total Qte :</h5>
+                <h5 style={{color:'red'}}>0</h5>
+                <h5>Nombre Articles :</h5>
+                <h5 style={{color:'red'}}>0</h5>
+               </div> 
+               <div className="qteDivBtnsDiv">
+                 <div className="fsRow">
+                   <button className="fsBtn">Enregister<FaCheck style={{color:'green'}} /></button>
+                   <button className="fsBtn">Inserer</button>
+                   <button className="fsBtn">Modifier<FaPen style={{color:'blue'}} /></button>
+                 </div>
+                 <div className="scndRow">
+                   <button className="fsBtn">Ajouter <FaPlus style={{color:'green'}} /></button>
+                   <button className="fsBtn">Effacer <FaMinus  style={{color:'red'}}/></button>
+                 </div>
+               </div>
+              </div>
                <div className="priceDiv">
-                <p>0,00</p>
+                <p>{result}</p>
                </div>
 
                 <div>
@@ -223,36 +229,47 @@ useEffect(() => {
                          <div>
                       
 
-      <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Ajouter Article</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="ajout-input">
-          <label>Code Bare:
-          <input type="text" readOnly value={input.cb} />
-          </label>
-         <label>Article:
-         <input type="text" name="article" className="article" value={nvInputs.article} onChange={HandelNvInput} />
-         </label>
-         <label>Prix:
-         <input type="text" name="prix" className="prix" value={nvInputs.prix} onChange={HandelNvInput}  />
-         </label>
-         <label>Qte:
-         <input type="text" name="qte" className="qte" value={nvInputs.qte} onChange={HandelNvInput}  />
-         </label>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={HandelAjouterElement}  >
-          Ajouter
-          </Button>
-          <Button variant="secondary" >
-          Imp
-          </Button>
-          <Button variant="secondary" >
-          Toujour Ajouter
-          </Button>
-        </Modal.Footer>
-      </Modal>
+<Modal show={showModal} onHide={handleClose}>
+  <Modal.Header closeButton>
+    <Modal.Title>Ajouter Article</Modal.Title>
+  </Modal.Header>
+  <Modal.Body className="ajout-input">
+    <label>Code barre:
+      <input type="text" readOnly value={input.cb} className="code-field" />
+    </label>
+    <label>Article:
+      <input type="text" name="article" className="art-field" value={nvInputs.article} onChange={HandelNvInput} />
+    </label>
+    <label>Prix de Vente:
+      <input type="text" name="prix" className="prx-field" value={nvInputs.prix} onChange={HandelNvInput} />
+    </label>
+    {/* Champ d'entrée de fichier */}
+    <div className="ajout-file">
+    <label htmlFor="fileInput" style={{ cursor: 'pointer' }}>
+  <FaPlus className="button-ajout" /> {/* Ajout de l'icône "plus" */}
+</label>
+<input id="fileInput" type="file" onChange={(e) => setNvInput({ ...nvInputs, chemin: e.target.files[0].name })} style={{ display: 'none' }} />
+{/* Afficher le nom du fichier sélectionné uniquement s'il y en a un */}
+<label>Chemin:
+  <input type="text" name="chemin" value={nvInputs.chemin ? nvInputs.chemin : ''} readOnly className="ch-field"/>
+</label>
+</div>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={HandelAjouterElement}>
+      Ajouter
+    </Button>
+    <Button variant="secondary">
+      Imp
+    </Button>
+    <Button variant="secondary" /* onClick={HandelAjouterElementDB} */>
+      Toujours Ajouter
+    </Button>
+    <Button variant="secondary">
+      Importer
+    </Button>
+  </Modal.Footer>
+</Modal>
                          </div>
                           ) : ''}
                </div>  
