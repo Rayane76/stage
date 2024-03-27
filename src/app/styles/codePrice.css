@@ -10,7 +10,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    box-shadow: 1px 1px 1px 1px black ;
+  
     
 }
 
@@ -126,7 +126,7 @@ width: 20rem;
     justify-content: end;
     align-items: center;
     color: #22DD22;
-    font-size: 5rem;
+    
 }
 .ajout-input{
     display: flex;

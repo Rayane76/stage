@@ -14,7 +14,9 @@
     width: 20.8%;
     height: 90%;
     margin: 0.6rem;
-
+    font-size: 1.1rem;
+    font-weight: 800;
+    
 }
 
 .clear-button {
@@ -22,7 +24,16 @@
     color: #fff;
     border: none;
 }
+.clear-button2 {
+    background-color: #f44336;
+    color: #fff;
+    border: none;
+    width: 13rem;
+}
 
 .clear-button:hover {
+    background-color: #d32f2f;
+}
+.clear-button2:hover {
     background-color: #d32f2f;
 }

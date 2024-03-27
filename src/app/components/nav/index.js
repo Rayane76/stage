@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect, useContext, lazy, Suspense } from 'react';
+import React, { useState, useEffect,useRef} from 'react';
 import "../../styles/nav.css"
 import "../../styles/tableTotal.css"
 import { Modal } from 'react-bootstrap';
@@ -13,8 +13,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { FaSearch ,FaPlus, FaMinus,FaPen,FaUser,FaTimes } from 'react-icons/fa';
-import Calculator from '../utils/Calculatrice';
-
+import { useReactToPrint } from 'react-to-print';
+import { useHist } from '../utils/historyProvider';
 
 
 export default function Nav(props){
@@ -26,7 +26,9 @@ export default function Nav(props){
     const [modifierBon,setModifierBon]=useState(false);
     const [AjouterBon,setAjouterBon]=useState(false);
     const [dateEtHeureActuelles, setDateEtHeureActuelles] = useState(getCurrentDateTime());
-    const [showCalculator, setShowCalculator] = useState(false);
+    const componentRef = useRef();
+    const {history}=useHist();
+
 
     const HandelInput=(e)=>{
       e.preventDefault();
@@ -34,51 +36,16 @@ export default function Nav(props){
       const value=e.target.value
       setInput(item=>({...item,[name]:value}))
     }
-    
-    const handleCalcButtonClick = () => {
-      setShowCalculator(true); // Affichez la calculatrice lorsque le bouton "Calc" est cliqué
-  };
+
+    const handlePrint = useReactToPrint({
+      content: () => componentRef.current,
+    });
     
     const onClientSelect = (e)=>{
       setClient(e.target.value);
     }
 
-    const HandelPrint = async (e) => {
-      e.preventDefault();
-      try {
-          const pdfDocumentUrl = '/public/DemandeStageLicence.pdf';
   
-          // Récupérer le contenu du fichier PDF sous forme de blob
-          const response = await fetch(pdfDocumentUrl);
-          const blob = await response.blob();
-  
-          // Créer un objet URL à partir du blob
-          const blobUrl = URL.createObjectURL(blob);
-  
-          // Créer un objet <embed> pour afficher le PDF dans la page
-          const embedElement = document.createElement('embed');
-          embedElement.src = blobUrl;
-          embedElement.type = 'application/pdf';
-          embedElement.style.display = 'none'; // Assurez-vous que l'élément est caché
-  
-          // Ajouter l'élément à la page
-          document.body.appendChild(embedElement);
-  
-          // Attendre un court délai pour que le PDF soit chargé
-          await new Promise(resolve => setTimeout(resolve, 1000));
-  
-          // Imprimer le contenu de l'élément <embed>
-          window.print();
-  
-          // Retirer l'élément de la page une fois l'impression terminée
-          document.body.removeChild(embedElement);
-  
-          // Révoquer l'URL du blob pour libérer la mémoire
-          URL.revokeObjectURL(blobUrl);
-      } catch (error) {
-          console.error('Erreur lors de l\'impression du document PDF :', error);
-      }
-  };
       
   
  useEffect(()=>{
@@ -196,9 +163,12 @@ useEffect(() => {
         <button className="divBtn" style={{ color: 'green', fontSize: '20px' }}>*</button>
       
     </div>
+   
     <div className="dateDiv">
         <h2>{dateEtHeureActuelles}</h2>
     </div>
+    
+    
 </div>
          </div>
             <Modal show={articleInfo} onHide={()=>setArticlInfo(false)}>
@@ -265,7 +235,7 @@ useEffect(() => {
       <button className="bt" onClick={()=>setAjouterBon(true)}>Ajouter<FaPlus style={{color:'green'}} /></button>
       <button className="bt">Effacer<FaMinus  style={{color:'red'}}/></button>
       <button className="bt" onClick={()=>setModifierBon(true)}>Modifier<FaPen style={{color:'blue'}} /></button>
-      <button className="bt" onClick={HandelPrint}>Imprimer</button>
+      <button className="bt" onClick={handlePrint}>Imprimer</button>
    
     </div>
    
@@ -300,8 +270,8 @@ useEffect(() => {
       <Form.Check inline type="radio" label="Année" />
     </div>
   </Modal.Header>
-  <Modal.Body className="modal-body-bon">
-  <TableContainer component={Paper}>
+  <Modal.Body className="modal-body-bon" ref={componentRef}>
+  <TableContainer component={Paper} >
   <Table sx={{ minWidth: 650 }} aria-label="simple table">
   <TableHead>
       <TableRow>
@@ -344,77 +314,114 @@ useEffect(() => {
 
 <Modal show={modifierBon} centered onHide={() => setModifierBon(false)} className="fenetre-bon"  size="lg">
             
-            <Modal.Header   className="modal-header-bon">
+            <Modal.Header   className="modal-header-bon2">
               <div className="header">
                 <p >Vente Article Modification</p>
             <div className="custom-close-button" onClick={() => setModifierBon(false)}>
               <FaTimes />
               </div>
               </div>
-          
+          <div className='colones'>
               <div className="colone1">
               <Form.Select className="type">   
                <option >Pro-Format</option>
                <option >Facture</option>
                <option >Bon de Livraison</option>
               </Form.Select>
-             <label htmlFor="client">Client:
+
+              <div className='client-modif-bon'>
+             <label htmlFor="client" >Client: </label>
               <Form.Select className="clien">   
                <option >Particulier</option>
               </Form.Select>
               <button><FaSearch style={{color:'blue', border:'none'}}/></button>
               <button><FaPlus style={{color:'green',border:'none'}}/></button>
-             </label>             
-             <label htmlFor="code-bare">Codea barres
+             </div>  
+
+             <label htmlFor="code-bare" className='code-modif'>Codea barres :
               <input type="text" name="code" id="code" />
              </label>
 
-             <label htmlFor="famille">Famille:
-             <Form.Select className="clien">   
+              <div className='famille-modif'>
+             <label htmlFor="famille">Famille: </label>
+             <Form.Select className="clien" style={{width:'150px'}}>   
                <option >xl</option>
                <option >bs</option>
                <option >ll</option>
                <option >lm</option>
               </Form.Select>
-             </label>
-             <label htmlFor="article">Article
-             <Form.Select className="article">   
+              </div>
+
+              <div className='article-modif'>
+             <label htmlFor="article">Article </label>
+             <Form.Select className="article" style={{width:'150px'}}>   
                <option >Sucre</option>
                <option >Harisa</option>
                <option >Lai</option>
                <option >Caffe</option>
               </Form.Select>
-             </label>
-             <label htmlFor="prix">Prix:
-             <input type="text" name="prix" id='prix' />
-             </label>
-
-             <label htmlFor="prix">Qte:
-             <input type="text" name="quantite" id='quantite' />
-             </label>
+              <label htmlFor="id" style={{marginLeft:'20px'}}>Id:</label>
+              <input type="text" className='id-modif' />
               </div>
+
+              <div style={{display:'flex',flexDirection:'row', justifyContent:'center', alignItems:'center',gap:'10px' ,marginRight:'75px'}}>
+             <label htmlFor="prix">Prix: </label>
+             <input type="text" name="prix" id='prix' />
+            
+
+             <label htmlFor="prix">Qte:</label>
+             <input type="text" name="quantite" id='quantite'  style={{width:'35px', height:'35px'}}/>
+              </div>
+              </div>
+
 
               <div className="colone2">
-              <div className="date-search">
-               <label htmlFor="date">Date:
+                <div className='ligne1-colone2-modif'>
+                <div style={{display:'flex',flexDirection:'column', justifyContent:'center',alignItems:'center',gap:'13px',zIndex:'1', marginTop:"30px"}}  >
+              <div className="date-modif">
+               <label htmlFor="date">Date:</label>
                 <input type="text" name='date' />
-               </label>
-                <button className="search-button"><FaSearch /></button>
               </div>
-              <div className="amount-search">
-                <Form>
-                  <Form.Group controlId="amountSearch">
-                    <Form.Label>Chercher Montant:</Form.Label>
-                    <Form.Control type="text" defaultValue={formatPrice(0)} />
-                  </Form.Group>
-                </Form>
+              <div className='cadre-orange'>
+               <div className='l'>
+                <p>Nombre Artilce:</p>
+                <h3>0</h3>
+               </div>
+               <div className='l'>
+               <p>Total Qte:</p>
+                <h3>0.00</h3>
+               </div>
+               <div className='l2'>
+               <p>Total Bon:</p>
+                <h3 style={{color:'red'}}>0.00 DZD</h3>
+               </div>
               </div>
+            
               </div>
-              <div className="radio-buttons">
-                <Form.Check inline type="radio" label="Aujourd'hui" />
-                <Form.Check inline type="radio" label="Semaine" />
-                <Form.Check inline type="radio" label="Mois" />
-                <Form.Check inline type="radio" label="Année" />
+              <div style={{display:'flex',flexDirection:'column', justifyContent:'center',alignItems:'center',gap:'4px'}} className='adr'>
+                <button style={{border:'none',width:"70px",height:'40px' , borderRadius:'12px'}}>Adress</button>
+                <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:'4px'}} >
+                <label htmlFor="copie">Copies</label>
+                <input type="text" name='copie' style={{width:'36px'}} />
+                </div>
+                <button className='bt-imprimer-modif'>Imprimer Document</button>
+              </div>
+              
+
+              </div>
+
+             
+              
+              <div className="button-modif" style={{marginTop:"8px"}}>
+                <button  style={{border:"none"}}><FaPlus style={{color:'green',border:"none"}}/>Ajouter</button>
+                <button  style={{border:"none"}}><FaMinus style={{color:'red',border:"none"}}/>Effacer</button>
+                <button  style={{border:"none"}}>Enregister</button>
+                <button  style={{border:"none"}}><FaPen style={{color:'blue',border:"none"}}/>Modifier</button>
+              </div>
+
+              </div>
+              
+
               </div>
             </Modal.Header>
             <Modal.Body className="modal-body-bon">

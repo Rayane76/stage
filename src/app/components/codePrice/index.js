@@ -8,13 +8,12 @@ import Nav from '../nav/index'
 import { FaPlus, FaMinus, FaCheck,FaPen} from 'react-icons/fa';
 import { useCalculator } from '../utils/resultProvider'
 import { useInfo } from '../utils/infoProvider'; // Importez le hook useCalculator
+import { useHist } from '../utils/historyProvider';
 
 
 
 
-
-
-export default function CodePrice(){
+export default function CodePrice(props){
    const cbRef = useRef(null);
    const qteRef = useRef(null);
    const prixRef = useRef(null);
@@ -26,7 +25,10 @@ export default function CodePrice(){
    const [article, setArticl] = useState([]);
    const { result} = useCalculator();
    const { info, setInfo } = useInfo();
-
+   const [selectedArticle, setSelectedArticle] = useState(null);
+   const [fontSize, setFontSize] = useState(80);
+   const resultRef = useRef(null);
+   const {history}=useHist();
 
 //fetcher les articles
 useEffect(() => {
@@ -38,6 +40,19 @@ useEffect(() => {
       console.error('Error fetching data:', err);
     });
 }, []);
+
+useEffect(() => {
+  const checkOverflow = () => {
+    const resultElement = resultRef.current;
+    if (resultElement) {
+      const isOverflowing = resultElement.scrollWidth > resultElement.clientWidth;
+      if (isOverflowing) {
+        const newFontSize = fontSize - 1;
+        setFontSize(newFontSize);
+      }
+    }
+    checkOverflow();
+  } },[fontSize,result]);
 
 
 
@@ -65,6 +80,33 @@ const handleKeyPress = (event) => {
     setAjouter(false);
   }
 };
+
+
+const handleKeyPressQte = (event) => {
+  if (event.key === 'Enter') {
+    const selectedItem=article.find(item=>item.barrcode===input.cb);
+    if(selectedItem){
+      
+      setInput(prev=>({
+        ...prev,
+        id: selectedItem.id,
+        prix: selectedItem.P_vente,
+        
+      }))
+      
+      setInfo(prev => [
+        ...prev,
+        {
+          article: selectedItem.codif,
+          qte: input.qte,
+          prix: selectedItem.P_vente,
+        }
+      ]);
+      setInput({qte:1,cb:0})//initialisation
+      
+    }
+  } 
+};
      
  
 //stocker les informations des input filed (code bare article id .....)
@@ -89,32 +131,31 @@ const handleKeyPress = (event) => {
     
 
 //la fonction pour selecionner un artilce sont id et famille automatiquemet s'affiche    
-    const HandelArticl=(e)=>{
-      e.preventDefault();
-      const selectedItem=article.find(item=>item.codif===e.target.value);
-      if(selectedItem){
-        
-        setInput(prev=>({
-          ...prev,
-          id: selectedItem.id,
-          prix: selectedItem.P_vente,
-        }))
-        
-        setInfo(prev => [
-          ...prev,
-          {
-            article: selectedItem.codif,
-            qte: input.qte,
-            prix: selectedItem.P_vente,
-          }
-        ]);
-       
-        
-      }
-    }
+const HandelArticl = (e) => {
+  e.preventDefault();
+  const selectedItem = article.find(item => item.codif === e.target.value);
+  if (selectedItem) {
+     setSelectedArticle(selectedItem); // Mettre à jour l'article sélectionné
+
+     setInput(prev => ({
+        ...prev,
+        id: selectedItem.id,
+        prix: selectedItem.P_vente,
+     }));
+
+     setInfo(prev => [
+        ...prev,
+        {
+           article: selectedItem.codif,
+           qte: input.qte,
+           prix: selectedItem.P_vente,
+        }
+     ]);
+  }
+};
 
 
-    
+
 
      const HandelNvInput = (e) => {
       const name = e.target.name;
@@ -129,6 +170,7 @@ const handleKeyPress = (event) => {
       const nouvelArticle = {
         codif: nvInputs.article,
         barrcode: input.cb,
+        qte:input.qte,
         P_vente: parseFloat(nvInputs.prix),
         id: 1, // Remplacer 1 par l'ID approprié de l'article
         id_S_article: 1, // Remplacer 1 par l'ID approprié de la sous-catégorie de l'article
@@ -140,10 +182,16 @@ const handleKeyPress = (event) => {
       setArticl(prevArticles => [...prevArticles, nouvelArticle]);
       alert('article ajouter !!!!')
       // Réinitialiser les champs d'entrée
-      setInput({});
+      setInput({qte:1,cb:0});
       setNvInput({});
       setAjouter(false);
     };
+
+  
+   
+       
+    console.log(info);
+    
      
     /* ajouter l'article dans la base de donne */
    /*  const HandelAjouterElementDB=(e)=>{
@@ -162,7 +210,7 @@ const handleKeyPress = (event) => {
                    </div>
                    <div className="qte">
                    <p style={{marginRight:"5px"}}>Qte :</p>
-                   <input className="qteInput" ref={qteRef} name='qte' onChange={HandelInput}  value={input.qte} defaultValue={1}/>
+                   <input className="qteInput" ref={qteRef} name='qte' onChange={HandelInput} onKeyPress={handleKeyPressQte} value={input.qte} defaultValue={1}/>
                    </div>
                   </div>
                   <div className="row2">
@@ -198,15 +246,15 @@ const handleKeyPress = (event) => {
 
                </Form.Select>
                <p style={{marginRight:"5px",marginTop:'6px'}}>Prix:</p>
-               <input className="priceInput" ref={prixRef} name='prix' onChange={HandelInput} value={input.prix} /* value={prix} *//>
+               <input className="priceInput" ref={prixRef} name='prix' onChange={HandelInput} value={selectedArticle ? selectedArticle.P_vente : input.prix} /* value={prix} *//>
                   </div>
                </div>
                <div className="qteDiv">
                <div className="totalDiv">
                 <h5>Total Qte :</h5>
-                <h5 style={{color:'red'}}>0</h5>
+                <h5 style={{color:'red'}}>{props.qteTotal()}</h5>
                 <h5>Nombre Articles :</h5>
-                <h5 style={{color:'red'}}>0</h5>
+                <h5 style={{color:'red'}}>{props.articlTotal()}</h5>
                </div> 
                <div className="qteDivBtnsDiv">
                  <div className="fsRow">
@@ -216,13 +264,20 @@ const handleKeyPress = (event) => {
                  </div>
                  <div className="scndRow">
                    <button className="fsBtn">Ajouter <FaPlus style={{color:'green'}} /></button>
-                   <button className="fsBtn">Effacer <FaMinus  style={{color:'red'}}/></button>
+                   <button className="fsBtn">Effacer <FaMinus  style={{color:'red'}} onClick={()=>setInfo([])}/></button>
                  </div>
                </div>
               </div>
-               <div className="priceDiv">
-                <p>{result}</p>
-               </div>
+              <div className="priceDiv" style={{ overflow: 'hidden', position: 'relative' }}>
+  <div style={{ position: 'absolute', top: 0, left: 0 }}>
+    {history.map((equation, index) => (
+      <div key={index}>{equation}</div>
+    ))}
+  </div>
+  <div ref={resultRef} style={{ fontSize: `${fontSize}px` }}>
+    {result}
+  </div>
+</div>
 
                 <div>
                {ajouter ? (
