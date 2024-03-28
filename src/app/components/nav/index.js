@@ -79,18 +79,27 @@ useEffect(() => {
    
 
 // si je clique sur f2 ou sur le button je fait un focuse sur le input de prix 
-    const ChangePrix=(e)=>{
-     e.preventDefault();
-     props.prixRef.current.focus();
+   
+
+    const ChangePrix = (e) => {
+      e.preventDefault();
+      props.prixRef.current.focus();
+  };
+
+  const HandelKeyPress = (event) => {
+    // Vérifier si la touche pressée est F2
+    if (event.key === 'F2' || event.keyCode === 113) {
+        setArticlInfo(true);
     }
-
-    const HandelKeyPress=(event)=>{
-      if (event.key === 'F8') {
-        props.prixRef.current.focus();
-         
-      }
-    } 
-
+    // Vérifier si la touche pressée est F4
+    else if (event.key === 'F4' || event.keyCode === 115) {
+        setListeBon(true);
+    }
+    // Vérifier si la touche pressée est F8
+    else if (event.key === 'F8' || event.keyCode === 119) {
+        ChangePrix();
+    }
+};
     const HandelArticl=(e)=>{
       e.preventDefault();
       const selectedItem=props.article.find(item=>item.codif===e.target.value);
@@ -124,8 +133,22 @@ useEffect(() => {
     }
   }
 
-
-   
+const handelModifOpen=()=>{
+  setModifierBon(true);
+  setListeBon(false)
+}
+const handelModifClose=()=>{
+  setModifierBon(false);
+  setListeBon(true)
+}
+  const handelAjoutOpen=()=>{
+    setAjouterBon(true);
+    setListeBon(false);
+  } 
+  const handelAjoutClose=()=>{
+    setAjouterBon(false);
+    setListeBon(true);
+  }
 
     return(
         <>
@@ -149,9 +172,9 @@ useEffect(() => {
         </div>
     </div>
     <div className="navDivButtons">
-        <button className="divBtn" onClick={() => setArticlInfo(true)}>F2 prix?</button>
+        <button className="divBtn" onClick={() => setArticlInfo(true)} onKeyDown={HandelKeyPress}>F2 prix?</button>
         <button className="divBtn">F5 OK</button>
-        <button className="divBtn" onClick={() => setListeBon(true)}>F4 Liste</button>
+        <button className="divBtn" onClick={() => setListeBon(true)} onKeyDown={HandelKeyPress}>F4 Liste</button>
         <button className="divBtn">SUI</button>
         <button className="divBtn">Pre</button>
         <button className="divBtn">F1</button>
@@ -171,7 +194,7 @@ useEffect(() => {
     
 </div>
          </div>
-            <Modal show={articleInfo} onHide={()=>setArticlInfo(false)}>
+            <Modal show={articleInfo} centered onHide={()=>setArticlInfo(false)} >
                 <Modal.Header closeButton className="modal-header">
                     <Modal.Title>Inforamtion Article</Modal.Title>
                 </Modal.Header>
@@ -213,28 +236,28 @@ useEffect(() => {
 
 
 
-            <Modal show={listeBon} onHide={() => setListeBon(false)} >
+            <Modal show={listeBon} onHide={() => setListeBon(false)} className="fenetre-bon" size="lg">
             
-  <Modal.Header  className="modal-header-bon">
+  <Modal.Header   className="modal-header-bon">
     <div className="header">
-      <p >Liste des bons</p>
+      <h3 style={{textDecoration:'underline'}}>Liste des bons</h3>
   <div className="custom-close-button" onClick={() => setListeBon(false)}>
     <FaTimes />
     </div>
     </div>
     <div className="ligne1">
-    <Form>
-      <Form.Group controlId="clientSelect">
-        <Form.Label><FaUser />Client:</Form.Label>
-        <Form.Select  className="client-bon"> 
+    <Form className='form-client'>
+      
+        <p style={{marginTop:'12px'}}><FaUser />Client:</p>
+        <Form.Select  className="client-bon" style={{width:'250px'}}> 
           {/* Options pour le sélecteur de client */}
        </Form.Select>
-      </Form.Group>
+      
     </Form>
     <div className="button-group">
-      <button className="bt" onClick={()=>setAjouterBon(true)}>Ajouter<FaPlus style={{color:'green'}} /></button>
+      <button className="bt" onClick={handelAjoutOpen}>Ajouter<FaPlus style={{color:'green'}} /></button>
       <button className="bt">Effacer<FaMinus  style={{color:'red'}}/></button>
-      <button className="bt" onClick={()=>setModifierBon(true)}>Modifier<FaPen style={{color:'blue'}} /></button>
+      <button className="bt" onClick={handelModifOpen}>Modifier<FaPen style={{color:'blue'}} /></button>
       <button className="bt" onClick={handlePrint}>Imprimer</button>
    
     </div>
@@ -243,16 +266,16 @@ useEffect(() => {
     <div className="ligne2">
     <div className="date-search">
       <Form>
-        <Form.Group controlId="dateRange">
-          <Form.Label>Date:</Form.Label>
-          <Form.Control type="text" placeholder="JJ/MM/AAAA" />
-        </Form.Group>
-        <Form.Group controlId="toDate">
-          <Form.Label>Au:</Form.Label>
-          <Form.Control type="text" placeholder="JJ/MM/AAAA" />
-        </Form.Group>
+          <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:"7px"}}>
+          <p style={{marginTop:'12px'}}>Date:</p>
+          <Form.Control type="text" placeholder="JJ/MM/AAAA" style={{marginLeft:'33px',width:'250px'}} />
+          </div>
+       <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:"7px"}}>
+          <p style={{marginTop:'12px'}}>Au:</p>
+          <Form.Control type="text" placeholder="JJ/MM/AAAA" style={{marginLeft:'47px' , width:'250px'}} />
+          </div>
       </Form>
-      <button className="search-button"><FaSearch /></button>
+      <button className="search-button" style={{marginBottom:'14px'}}><FaSearch /></button>
     </div>
     <div className="amount-search">
       <Form>
@@ -275,9 +298,9 @@ useEffect(() => {
   <Table sx={{ minWidth: 650 }} aria-label="simple table">
   <TableHead>
       <TableRow>
-        <TableCell >Date</TableCell>
-        <TableCell >Propriétaire</TableCell>
-        <TableCell >Montant</TableCell>
+        <TableCell style={{fontWeight:'bolde',color:'black',fontSize:'17px'}}>Date</TableCell>
+        <TableCell style={{fontWeight:'bolde',color:'black',fontSize:'17px'}}>Propriétaire</TableCell>
+        <TableCell style={{fontWeight:'bolde',color:'black',fontSize:'17px'}}>Montant</TableCell>
       </TableRow>
     </TableHead>
     <TableBody> 
@@ -316,8 +339,8 @@ useEffect(() => {
             
             <Modal.Header   className="modal-header-bon2">
               <div className="header">
-                <p >Vente Article Modification</p>
-            <div className="custom-close-button" onClick={() => setModifierBon(false)}>
+              <h3 style={{textDecoration:'underline'}}>Modification artilces</h3>
+            <div className="custom-close-button" onClick={handelModifClose}>
               <FaTimes />
               </div>
               </div>
@@ -429,9 +452,9 @@ useEffect(() => {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
                 <TableRow>
-                  <TableCell >Date</TableCell>
-                  <TableCell >Propriétaire</TableCell>
-                  <TableCell >Montant</TableCell>
+                  <TableCell style={{fontWeight:'bolde',color:'black',fontSize:'17px'}} >Date</TableCell>
+                  <TableCell style={{fontWeight:'bolde',color:'black',fontSize:'17px'}}>Propriétaire</TableCell>
+                  <TableCell style={{fontWeight:'bolde',color:'black',fontSize:'17px'}}>Montant</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -466,79 +489,116 @@ useEffect(() => {
 
 
 
-<Modal show={AjouterBon} onHide={() => setAjouterBon(false)} className="fenetre-bon" centered>
+<Modal show={AjouterBon} centered onHide={() => setAjouterBon(false)}  className="fenetre-bon" size="lg" >
             
-            <Modal.Header   className="modal-header-bon">
+<Modal.Header   className="modal-header-bon2">
               <div className="header">
-                <p >Vente Article Modification</p>
-            <div className="custom-close-button" onClick={() => setAjouterBon(false)}>
+              <h3 style={{textDecoration:'underline'}}>Ajouter artilces</h3>
+            <div className="custom-close-button" onClick={handelAjoutClose}>
               <FaTimes />
               </div>
               </div>
-          
+          <div className='colones'>
               <div className="colone1">
               <Form.Select className="type">   
                <option >Pro-Format</option>
                <option >Facture</option>
                <option >Bon de Livraison</option>
               </Form.Select>
-             <label htmlFor="client">Client:
+
+              <div className='client-modif-bon'>
+             <label htmlFor="client" >Client: </label>
               <Form.Select className="clien">   
                <option >Particulier</option>
               </Form.Select>
-              <button><FaSearch style={{color:'blue', border:'none'}}/></button>
-              <button><FaPlus style={{color:'green',border:'none'}}/></button>
-             </label>             
-             <label htmlFor="code-bare">Codea barres
+              <button className='search-modif'><FaSearch style={{color:'blue'}} /></button>
+              <button className='search-modif'><FaPlus style={{color:'green'}} /></button>
+             </div>  
+
+             <label htmlFor="code-bare" className='code-modif'>Codea barres :
               <input type="text" name="code" id="code" />
              </label>
 
-             <label htmlFor="famille">Famille:
-             <Form.Select className="clien">   
+              <div className='famille-modif'>
+             <label htmlFor="famille">Famille: </label>
+             <Form.Select className="clien" style={{width:'150px'}}>   
                <option >xl</option>
                <option >bs</option>
                <option >ll</option>
                <option >lm</option>
               </Form.Select>
-             </label>
-             <label htmlFor="article">Article
-             <Form.Select className="article">   
+              </div>
+
+              <div className='article-modif'>
+             <label htmlFor="article">Article </label>
+             <Form.Select className="article" style={{width:'150px'}}>   
                <option >Sucre</option>
                <option >Harisa</option>
                <option >Lai</option>
                <option >Caffe</option>
               </Form.Select>
-             </label>
-             <label htmlFor="prix">Prix:
-             <input type="text" name="prix" id='prix' />
-             </label>
-
-             <label htmlFor="prix">Qte:
-             <input type="text" name="quantite" id='quantite' />
-             </label>
+              <label htmlFor="id" style={{marginLeft:'20px'}}>Id:</label>
+              <input type="text" className='id-modif' />
               </div>
+
+              <div style={{display:'flex',flexDirection:'row', justifyContent:'center', alignItems:'center',gap:'10px' ,marginRight:'75px'}}>
+             <label htmlFor="prix">Prix: </label>
+             <input type="text" name="prix" id='prix' />
+            
+
+             <label htmlFor="prix">Qte:</label>
+             <input type="text" name="quantite" id='quantite'  style={{width:'35px', height:'35px'}}/>
+              </div>
+              </div>
+
 
               <div className="colone2">
-              <div className="date-search">
-               <label htmlFor="date">Date:
+                <div className='ligne1-colone2-modif'>
+                <div style={{display:'flex',flexDirection:'column', justifyContent:'center',alignItems:'center',gap:'13px',zIndex:'1', marginTop:"30px"}}  >
+              <div className="date-modif">
+               <label htmlFor="date">Date:</label>
                 <input type="text" name='date' />
-               </label>
-                <button className="search-button"><FaSearch /></button>
               </div>
-              <div className="amount-search">
-                <Form>
-                  <Form.Group controlId="amountSearch">
-                    <Form.Label>Chercher Montant:</Form.Label>
-                    <Form.Control type="text" defaultValue={formatPrice(0)} />
-                  </Form.Group>
-                </Form>
+              <div className='cadre-orange'>
+               <div className='l'>
+                <p>Nombre Artilce:</p>
+                <h3>0</h3>
+               </div>
+               <div className='l'>
+               <p>Total Qte:</p>
+                <h3>0.00</h3>
+               </div>
+               <div className='l2'>
+               <p>Total Bon:</p>
+                <h3 style={{color:'red'}}>0.00 DZD</h3>
+               </div>
               </div>
+            
               </div>
-              <div className="radio-buttons">
-                <Form.Check inline type="radio" label="Aujourd'hui" />
-                <Form.Check inline type="radio" label="Semaine" />
-                <Form.Check inline type="radio" label="Mois" />
-                <Form.Check inline type="radio" label="Année" />
+              <div style={{display:'flex',flexDirection:'column', justifyContent:'center',alignItems:'center',gap:'4px'}} className='adr'>
+                <button style={{border:'none',width:"70px",height:'40px' }}>Adress</button>
+                <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:'4px'}} >
+                <label htmlFor="copie">Copies</label>
+                <input type="text" name='copie' style={{width:'36px'}} />
+                </div>
+                <button className='bt-imprimer-modif'>Imprimer Document</button>
+              </div>
+              
+
+              </div>
+
+             
+              
+              <div className="button-modif" style={{marginTop:"3px"}}>
+                <button  style={{border:"none",padding:"8px"}}><FaPlus style={{color:'green',border:"none"}}/>Ajouter</button>
+                <button  style={{border:"none",padding:"8px"}}><FaMinus style={{color:'red',border:"none"}}/>Effacer</button>
+                <button  style={{border:"none",padding:"8px"}}>Enregister</button>
+                <button  style={{border:"none",padding:"8px"}}><FaPen style={{color:'blue',border:"none"}}/>Modifier</button>
+              </div>
+
+              </div>
+              
+
               </div>
             </Modal.Header>
             <Modal.Body className="modal-body-bon">
@@ -546,9 +606,9 @@ useEffect(() => {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
                 <TableRow>
-                  <TableCell >Date</TableCell>
-                  <TableCell >Propriétaire</TableCell>
-                  <TableCell >Montant</TableCell>
+                  <TableCell style={{fontWeight:'bolde',color:'black',fontSize:'17px'}}>Date</TableCell>
+                  <TableCell style={{fontWeight:'bolde',color:'black',fontSize:'17px'}}>Propriétaire</TableCell>
+                  <TableCell style={{fontWeight:'bolde',color:'black',fontSize:'17px'}}>Montant</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -578,6 +638,7 @@ useEffect(() => {
             <Modal.Footer className="modal-footer-bon">
               <h1 style={{ color: 'green' }}>Total: {prix ? formatPrice(0) : ""}</h1>
             </Modal.Footer>
+            
             
           </Modal>
    

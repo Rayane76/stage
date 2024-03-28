@@ -186,13 +186,19 @@
   cursor: pointer;
   color: gray;
   margin-bottom: 1rem;
-  background: none;
   border: none;
 }
 .custom-close-button:hover {
   color: #333;
 }  
-
+.form-client{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  
+}
 
  .modal-header-bon{
   display: flex;
@@ -311,12 +317,7 @@
  .modal-footer-bon{
   width: 53rem;
  }
- .modal-header-bon .close-button {
-  /* Your custom styles for the close button */
-  /* For example: */
-  color: red;
-  font-size: 20px;
-}
+ 
 Modal{
   width: 60rem;
   border:4px solid greenyellow;
@@ -364,8 +365,7 @@ Modal{
  }
  .bt{
   border:none;
-  border-radius: 15px;
-  padding: 3px;
+  padding: 0.4rem;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -380,6 +380,12 @@ Modal{
   margin-right: 25rem;
   margin-top: 1rem;
  
+ }
+ .search-modif{
+  border: none;
+ }
+ .search-modif:hover{
+  background-color: #BFCFE7;
  }
 .button-ajout{
   color: green;
